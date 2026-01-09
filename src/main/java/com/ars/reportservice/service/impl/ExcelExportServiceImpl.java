@@ -12,13 +12,14 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ExcelExportServiceImpl implements ExcelExportService {
 
     @Override
     public ByteArrayInputStream exportRevenueReport(List<RevenueReportDTO> reports, RevenueReportFilter filter) {
-        String[] columns = {"ID", "Mã SP", "Tên Sản Phẩm", "Doanh thu theo giá bán", "Doanh thu thực tế", "Số lượng bán"};
+        String[] columns = {"STT", "Mã SP", "Tên Sản Phẩm", "Doanh thu theo giá bán", "Doanh thu thực tế", "Số lượng bán"};
 
         try (Workbook workbook = new XSSFWorkbook();
             ByteArrayOutputStream out = new ByteArrayOutputStream()) {
@@ -66,11 +67,13 @@ public class ExcelExportServiceImpl implements ExcelExportService {
 
             Row timeRow = sheet.createRow(1);
             Cell timeCell = timeRow.createCell(0);
-            String timeInfo = String.format("Thời gian: %s - %s", filter.getFromDate(), filter.getToDate());
+            String fromDate = Optional.ofNullable(filter.getFromDate()).orElse("Từ khi khởi tạo cửa hàng");
+            String toDate = Optional.ofNullable(filter.getToDate()).orElse("Hiện tại");
+            String timeInfo = String.format("Thời gian: %s - %s", fromDate, toDate);
             timeCell.setCellValue(timeInfo);
             sheet.addMergedRegion(new CellRangeAddress(1, 1, 0, columns.length - 1));
 
-            int currentRow = 3;
+            int currentRow = 3, count = 1;
             Row headerRow = sheet.createRow(currentRow++);
             headerRow.setHeightInPoints(25);
 
@@ -83,7 +86,7 @@ public class ExcelExportServiceImpl implements ExcelExportService {
             for (RevenueReportDTO report : reports) {
                 Row row = sheet.createRow(currentRow++);
                 row.setHeightInPoints(20);
-                createCell(row, 0, report.getProductId(), centerCellStyle);
+                createCell(row, 0, count++, centerCellStyle);
                 createCell(row, 1, report.getProductCode(), dataCellStyle);
                 createCell(row, 2, report.getProductName(), dataCellStyle);
                 createCell(row, 3, report.getGrossRevenue().doubleValue(), dataCellStyle);

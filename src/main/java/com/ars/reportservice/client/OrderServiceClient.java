@@ -8,6 +8,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 @FeignClient(name = "ORDER-SERVICE")
 public interface OrderServiceClient {
-    @GetMapping("/api/p/v1/orders/reports/revenues")
+    @GetMapping("/api/internal/orders/reports/revenues")
     BaseResponseDTO getRevenueReport(@SpringQueryMap RevenueReportFilter requestDTO);
 }
