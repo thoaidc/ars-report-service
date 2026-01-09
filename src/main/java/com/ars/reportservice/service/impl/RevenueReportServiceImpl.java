@@ -5,6 +5,7 @@ import com.ars.reportservice.dto.request.RevenueReportFilter;
 import com.ars.reportservice.dto.response.RevenueReportDTO;
 import com.ars.reportservice.service.ExcelExportService;
 import com.ars.reportservice.service.RevenueReportService;
+import com.dct.config.common.Common;
 import com.dct.model.dto.response.BaseResponseDTO;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -29,6 +30,7 @@ public class RevenueReportServiceImpl implements RevenueReportService {
 
     @Override
     public ByteArrayInputStream getRevenueReportExcel(RevenueReportFilter request) {
+        Common.checkShopAuthorities(request.getShopId());
         BaseResponseDTO responseDTO = orderServiceClient.getRevenueReport(request);
         TypeReference<List<RevenueReportDTO>> typeReference = new TypeReference<>() {};
         List<RevenueReportDTO> revenueReportDTOS = objectMapper.convertValue(responseDTO.getResult(), typeReference);
